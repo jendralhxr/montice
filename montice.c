@@ -17,21 +17,18 @@ double function(double x, double y, double z){\n\
 	return(";
 	
 char template_b[]="\
-);}\n\
+);\n}\n\
 int main(int argc, char *argv[]){\n\
 double x_min, x_max, x_span;\n\
 double y_min, y_max, y_span;\n\
 double z_min, z_max, z_span;\n\
 double sum_final, sum_local;\n\
-double x, y, z;\n\
+double x=0.0, y=0.0, z=0.0;\n\
 unsigned long int sample_count, i;\n\
 int node_count, node_rank, node_namelen;\n\
-char node_name[MPI_MAX_PROCESSOR_NAME];";
+char node_name[MPI_MAX_PROCESSOR_NAME];\n";
 
 char template_c[]="\
-x_span = x_max - x_min;\n\
-y_span = y_max - y_min;\n\
-z_span = z_max - z_min;\n\
 MPI_Init(&argc, &argv);\n\
 MPI_Comm_size(MPI_COMM_WORLD, &node_count);\n\
 MPI_Comm_rank(MPI_COMM_WORLD, &node_rank);\n\
@@ -41,7 +38,12 @@ if (!node_rank){\n\
 	printf(\"montice: start  = %d+%d\\n\",time_tv.tv_sec,time_tv.tv_usec);\n\
 	}\n\
 srand(time_tv.tv_sec+node_rank*time_tv.tv_usec);\n\
-	for (i=0; i<sample_count; i++){\n\
+	for (i=0; i<sample_count; i++){\n";
+	
+char template_d[]="\
+ 	x_span = x_max - x_min;\n\
+	y_span = y_max - y_min;\n\
+	z_span = z_max - z_min;\n\
 	x = rand()/(double)RAND_MAX*(double)x_span+x_min;\n\
 	y = rand()/(double)RAND_MAX*(double)y_span+y_min;\n\
 	z = rand()/(double)RAND_MAX*(double)z_span+z_min;\n\
@@ -79,13 +81,14 @@ int main(int argc, char *argv[]){
 	fprintf(worker_c,"%s",argv[1]);
 	fprintf(worker_c,"%s",template_b);
 	fprintf(worker_c,"sample_count = %ld;\n",sample);
-	fprintf(worker_c,"x_min = %s;\n",argv[2]);
-	fprintf(worker_c,"x_max = %s;\n",argv[3]);
-	fprintf(worker_c,"y_min = %s;\n",argv[4]);
-	fprintf(worker_c,"y_max = %s;\n",argv[5]);
-	fprintf(worker_c,"z_min = %s;\n",argv[6]);
-	fprintf(worker_c,"z_max = %s;\n",argv[7]);
 	fprintf(worker_c,"%s",template_c);
+	fprintf(worker_c,"\tx_min = %s;\n",argv[2]);
+	fprintf(worker_c,"\tx_max = %s;\n",argv[3]);
+	fprintf(worker_c,"\ty_min = %s;\n",argv[4]);
+	fprintf(worker_c,"\ty_max = %s;\n",argv[5]);
+	fprintf(worker_c,"\tz_min = %s;\n",argv[6]);
+	fprintf(worker_c,"\tz_max = %s;\n",argv[7]);
+	fprintf(worker_c,"%s",template_d);
 	fclose(worker_c);
 
 	// compile time
