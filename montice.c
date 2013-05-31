@@ -39,7 +39,7 @@ MPI_Get_processor_name(node_name, &node_namelen);\n\
 if (!node_rank){\n\
 	gettimeofday(&time_tv,NULL);\n\
 	printf(\"montice: start  = %d+%d\\n\",time_tv.tv_sec,time_tv.tv_usec);\n\
-}\n\
+	}\n\
 srand(time_tv.tv_sec+node_rank*time_tv.tv_usec);\n\
 	for (i=0; i<sample_count; i++){\n\
 	x = rand()/(double)RAND_MAX*(double)x_span+x_min;\n\
@@ -53,7 +53,7 @@ if (!node_rank){\n\
 	printf(\"montice: result = %.15E\\n\",result);\n\
 	gettimeofday(&time_tv,NULL);\n\
 	printf(\"montice: finish = %d+%d\\n\",time_tv.tv_sec,time_tv.tv_usec);\n\
-}\n\
+	}\n\
 MPI_Finalize();\n\
 return(0);\n\
 }\n";
