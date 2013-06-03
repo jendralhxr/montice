@@ -37,7 +37,7 @@ if (!node_rank){\n\
 	gettimeofday(&time_tv,NULL);\n\
 	printf(\"montice: start  = %d+%d\\n\",time_tv.tv_sec,time_tv.tv_usec);\n\
 	}\n\
-srand(time_tv.tv_sec+node_rank*time_tv.tv_usec);\n\
+srand(time_tv.tv_sec*node_rank+time_tv.tv_usec);\n\
 	for (i=0; i<sample_count; i++){\n";
 	
 char template_d[]="\
@@ -47,7 +47,7 @@ char template_d[]="\
 	x = rand()/(double)RAND_MAX*(double)x_span+x_min;\n\
 	y = rand()/(double)RAND_MAX*(double)y_span+y_min;\n\
 	z = rand()/(double)RAND_MAX*(double)z_span+z_min;\n\
-	sum_local += function(x,y,z)/(double)sample_count;\n\
+	sum_local += function(x,y,z)/(double)sample_count*x_span*y_span*z_span;\n\
 	}\n\
 MPI_Reduce(&sum_local,&sum_final,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);\n\
 if (!node_rank){\n\
@@ -93,6 +93,7 @@ int main(int argc, char *argv[]){
 
 	// compile time
 	if (system("mpicc worker.c -o worker")) return(1);
+	system("sync");
 	
 	// run time
 	printf("montice: expression = %s\n",argv[1]);
@@ -100,9 +101,8 @@ int main(int argc, char *argv[]){
 	printf("montice: y = [%s .. %s]\n",argv[4],argv[5]);
 	printf("montice: z = [%s .. %s]\n",argv[6],argv[7]);
 	printf("montice: %ld samples\n",count_sample);
-	printf("montice: %d processes using %s hostfile\n",count_proc,argv[10]);
-	
-	sprintf(command,"mpirun worker -hostfile %s -np %d",argv[10],count_proc);	
+	sprintf(command,"mpirun -np %d -hostfile %s worker",count_proc,argv[10]);	
+	printf("montice: %s\n",command);
 	if (system(command)) return(2);
 	
 	return(0);
