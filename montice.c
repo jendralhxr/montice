@@ -103,19 +103,19 @@ int main(int argc, char *argv[]){
 	// independent
 	if (!strstr(argv[2],"y") && !strstr(argv[2],"z") \
 		&& !strstr(argv[3],"y")&& !strstr(argv[3],"z"))
-		{var_printed_x(argv[2],argv[3]); printf("!!x\n");}
+		var_printed_x(argv[2],argv[3]);
  	if (!strstr(argv[4],"x") && !strstr(argv[4],"z") \
 		&& !strstr(argv[5],"x")&& !strstr(argv[5],"z"))
-		{var_printed_y(argv[4],argv[5]); printf("!!!y\n");}
+		var_printed_y(argv[4],argv[5]);
 	if (!strstr(argv[6],"x") && !strstr(argv[6],"y") \
 		&& !strstr(argv[7],"x")&& !strstr(argv[7],"y"))
-		{var_printed_z(argv[6],argv[7]); printf("!!!z\n");}
+		var_printed_z(argv[6],argv[7]);
 	// dependent to one
 	// y(x)
 	if (!strstr(argv[4],"z") && !strstr(argv[5],"z")\
 		&& (var_printed[0]==1) && (var_printed[1]==0))
 		var_printed_y(argv[4],argv[5]);
-	//~ // z(x)
+	// z(x)
 	if (!strstr(argv[6],"y") && !strstr(argv[7],"y")\
 		&& (var_printed[0]==1) && (var_printed[2]==0))
 		var_printed_z(argv[4],argv[5]);
