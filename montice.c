@@ -5,7 +5,7 @@
 FILE *worker_c;
 
 char command[500]; // command buffer for system()
-char cetak[3];
+
 char template_a[]="\
 #include <stdio.h>\n\
 #include <stdlib.h>\n\
@@ -37,11 +37,17 @@ if (!node_rank){\n\
 	gettimeofday(&time_tv,NULL);\n\
 	printf(\"montice: start  = %d+%d\\n\",time_tv.tv_sec,time_tv.tv_usec);\n\
 	}\n\
-	srand(time_tv.tv_sec*node_rank+time_tv.tv_usec);\n\
+srand(time_tv.tv_sec*node_rank+time_tv.tv_usec);\n\
 	for (i=0; i<sample_count; i++){\n";
 	
 char template_d[]="\
- 	sum_local += function(x,y,z)/(double)sample_count*x_span*y_span*z_span;\n\
+ 	x_span = x_max - x_min;\n\
+	y_span = y_max - y_min;\n\
+	z_span = z_max - z_min;\n\
+	x = rand()/(double)RAND_MAX*(double)x_span+x_min;\n\
+	y = rand()/(double)RAND_MAX*(double)y_span+y_min;\n\
+	z = rand()/(double)RAND_MAX*(double)z_span+z_min;\n\
+	sum_local += function(x,y,z)/(double)sample_count*x_span*y_span*z_span;\n\
 	}\n\
 MPI_Reduce(&sum_local,&sum_final,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);\n\
 if (!node_rank){\n\
@@ -54,34 +60,10 @@ MPI_Finalize();\n\
 return(0);\n\
 }\n";
 
-
 void print_usage(){
 	printf("montice: USAGE: montice EXPRESSION X_MIN X_MAX Y_MIN Y_MAX Z_MIN Z_MAX SAMPLE_COUNT PROC_COUNT HOSTFILE\n");
 	}
 	
-void cetak_x(char *min, char *max){
-	fprintf(worker_c,"\tx_min = %s;\n",min);
-	fprintf(worker_c,"\tx_max = %s;\n",max);
-	fprintf(worker_c,"\tx_span = x_max - x_min;\n");
-	fprintf(worker_c,"\tx = rand()/(double)RAND_MAX*(double)x_span+x_min;\n");
-	cetak[0]=1;
-	}
-	
-void cetak_y(char *min, char *max){
-	fprintf(worker_c,"\ty_min = %s;\n",min);
-	fprintf(worker_c,"\ty_max = %s;\n",max);
-	fprintf(worker_c,"\ty_span = y_max - y_min;\n");
-	fprintf(worker_c,"\ty = rand()/(double)RAND_MAX*(double)y_span+y_min;\n");
-	cetak[1]=1;
-	}
-
-void cetak_z(char *min, char *max){
-	fprintf(worker_c,"\tz_min = %s;\n",min);
-	fprintf(worker_c,"\tz_max = %s;\n",max);
-	fprintf(worker_c,"\tz_span = z_max - z_min;\n");
-	fprintf(worker_c,"\tz = rand()/(double)RAND_MAX*(double)z_span+z_min;\n");
-	cetak[2]=1;
-	}
 	
 int main(int argc, char *argv[]){
 	if (argc!=11){
@@ -100,45 +82,12 @@ int main(int argc, char *argv[]){
 	fprintf(worker_c,"%s",template_b);
 	fprintf(worker_c,"sample_count = %ld;\n",sample);
 	fprintf(worker_c,"%s",template_c);
-	// x,y,z -- strstr and stuff
-	// independent
-	if (!strstr(argv[2],"y") && !strstr(argv[2],"z") \
-		&& !strstr(argv[3],"y")&& !strstr(argv[3],"z"))
-		{cetak_x(argv[2],argv[3]); printf("!!x\n");}
- 	if (!strstr(argv[4],"x") && !strstr(argv[4],"z") \
-		&& !strstr(argv[5],"x")&& !strstr(argv[5],"z"))
-		{cetak_y(argv[4],argv[5]); printf("!!!y\n");}
-	if (!strstr(argv[6],"x") && !strstr(argv[6],"y") \
-		&& !strstr(argv[7],"x")&& !strstr(argv[7],"y"))
-		{cetak_z(argv[6],argv[7]); printf("!!!z\n");}
-	// dependent to one
-	// y(x)
-	if (!strstr(argv[4],"z") && !strstr(argv[5],"z")\
-		&& (cetak[0]==1) && (cetak[1]==0))
-		cetak_y(argv[4],argv[5]);
-	//~ // z(x)
-	if (!strstr(argv[6],"y") && !strstr(argv[7],"y")\
-		&& (cetak[0]==1) && (cetak[2]==0))
-		cetak_z(argv[4],argv[5]);
-	// x(y)
-	if (!strstr(argv[2],"z") && !strstr(argv[3],"z")\
-		&& (cetak[1]==1) && (cetak[0]==0))
-		cetak_x(argv[2],argv[3]);
-	// z(y)
-	if (!strstr(argv[6],"x") && !strstr(argv[7],"x")\
-		&& (cetak[1]==1) && (cetak[2]==0))
-		cetak_z(argv[6],argv[7]);
-	// x(z)
-	if (!strstr(argv[2],"y") && !strstr(argv[3],"y")\
-		&& (cetak[2]==1) && (cetak[0]==0))
-		cetak_x(argv[2],argv[3]);
-	// y(z)
-	if (!strstr(argv[4],"x") && !strstr(argv[5],"x")\
-		&& (cetak[2]==1) && (cetak[1]==0))
-		cetak_y(argv[4],argv[5]);
-	if (cetak[0]==0) cetak_x(argv[2],argv[3]);
-	if (cetak[1]==0) cetak_y(argv[4],argv[5]);
-	if (cetak[2]==0) cetak_z(argv[6],argv[7]);
+	fprintf(worker_c,"\tx_min = %s;\n",argv[2]);
+	fprintf(worker_c,"\tx_max = %s;\n",argv[3]);
+	fprintf(worker_c,"\ty_min = %s;\n",argv[4]);
+	fprintf(worker_c,"\ty_max = %s;\n",argv[5]);
+	fprintf(worker_c,"\tz_min = %s;\n",argv[6]);
+	fprintf(worker_c,"\tz_max = %s;\n",argv[7]);
 	fprintf(worker_c,"%s",template_d);
 	fclose(worker_c);
 
