@@ -12,7 +12,7 @@ char template_a[]="\
 #include <sys/time.h>\n\
 #include <mpi.h>\n\
 #include <math.h>\n\
-struct timeval time_tv;\n\
+struct timeval start_time, stop_time;\n\
 double function(double x, double y, double z){\n\
 	return(";
 	
@@ -34,10 +34,10 @@ MPI_Comm_size(MPI_COMM_WORLD, &node_count);\n\
 MPI_Comm_rank(MPI_COMM_WORLD, &node_rank);\n\
 MPI_Get_processor_name(node_name, &node_namelen);\n\
 if (!node_rank){\n\
-	gettimeofday(&time_tv,NULL);\n\
-	printf(\"montice: start  = %d+%d\\n\",time_tv.tv_sec,time_tv.tv_usec);\n\
+	gettimeofday(&start_time,NULL);\n\
+	printf(\"montice: start  = %d.%d\\n\",start_time.tv_sec,start_time.tv_usec);\n\
 	}\n\
-	srand(time_tv.tv_sec*node_rank+time_tv.tv_usec);\n\
+	srand(start_time.tv_sec*node_rank+start_time.tv_usec);\n\
 	for (i=0; i<sample_count; i++){\n";
 	
 char template_d[]="\
@@ -47,8 +47,9 @@ MPI_Reduce(&sum_local,&sum_final,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);\n\
 if (!node_rank){\n\
 	double result=sum_final/(double)node_count;\n\
 	printf(\"montice: result = %.15E\\n\",result);\n\
-	gettimeofday(&time_tv,NULL);\n\
-	printf(\"montice: finish = %d+%d\\n\",time_tv.tv_sec,time_tv.tv_usec);\n\
+	gettimeofday(&stop_time,NULL);\n\
+	printf(\"montice: finish = %d.%d\\n\",stop_time.tv_sec,stop_time.tv_usec);\n\
+	printf(\"montice: elapsed = %f\\n\",stop_time.tv_sec-start_time.tv_sec+(double)(stop_time.tv_usec-start_time.tv_usec)/1000000);\n\
 	}\n\
 MPI_Finalize();\n\
 return(0);\n\
