@@ -32,7 +32,7 @@ do
 echo +++++++++ procs num= "$numprocs" >> procs-d
 for try in 1 2 3 4 5
 do
-./montice "z*pow(4-x*x-y*y,0.5)" 0 2 0 "pow(4-x*x,0.5)" 0 "pow(4-x*x-y*y,0.5)" 1000000000 $numprocs host_cluster >> procs-a
+./montice "z*pow(4-x*x-y*y,0.5)" 0 2 0 "pow(4-x*x,0.5)" 0 "pow(4-x*x-y*y,0.5)" 1000000000 $numprocs host_cluster >> procs-d
 done
 done
 
