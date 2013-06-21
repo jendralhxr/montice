@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
 		}
 		
 	unsigned int count_proc = atol(argv[11]);
-	unsigned long int sample = atol(argv[4])*atol(argv[7])*atol(argv[10]);
+	unsigned long int sample = atol(argv[4])*atol(argv[7])*atol(argv[10])*atol(argv[10]);
 	
 	// building worker source file
 	worker_c = fopen("worker-blokice.c","w");
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]){
 	printf("blokice: x = [%s .. %s] %s div\n",argv[2],argv[3],argv[4]);
 	printf("blokice: y = [%s .. %s] %s div\n",argv[5],argv[6],argv[7]);
 	printf("blokice: z = [%s .. %s] %s div\n",argv[8],argv[9],argv[10]);
-	printf("blokice: sample = %ld\n",sample);
+	printf("blokice: samples = %ld\n",sample);
 	sprintf(command,"mpirun -np %d -hostfile %s worker-blokice",count_proc,argv[12]);	
 	printf("blokice: %s\n",command);
 	if (system(command)) return(2);
