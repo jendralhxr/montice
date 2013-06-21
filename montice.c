@@ -35,7 +35,7 @@ MPI_Comm_rank(MPI_COMM_WORLD, &node_rank);\n\
 MPI_Get_processor_name(node_name, &node_namelen);\n\
 if (!node_rank){\n\
 	gettimeofday(&start_time,NULL);\n\
-	printf(\"montice: start  = %d.%d\\n\",start_time.tv_sec,start_time.tv_usec);\n\
+	printf(\"montice: start  = %d+%d\\n\",start_time.tv_sec,start_time.tv_usec);\n\
 	}\n\
 	srand(start_time.tv_sec*node_rank+start_time.tv_usec);\n\
 	for (i=0; i<sample_count; i++){\n";
@@ -48,7 +48,7 @@ if (!node_rank){\n\
 	double result=sum_final/(double)node_count;\n\
 	printf(\"montice: result = %.15E\\n\",result);\n\
 	gettimeofday(&stop_time,NULL);\n\
-	printf(\"montice: finish = %d.%d\\n\",stop_time.tv_sec,stop_time.tv_usec);\n\
+	printf(\"montice: finish = %d+%d\\n\",stop_time.tv_sec,stop_time.tv_usec);\n\
 	printf(\"montice: elapsed = %f\\n\",stop_time.tv_sec-start_time.tv_sec+(double)(stop_time.tv_usec-start_time.tv_usec)/1000000);\n\
 	}\n\
 MPI_Finalize();\n\
