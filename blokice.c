@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
 		}
 		
 	unsigned int count_proc = atol(argv[11]);
-	unsigned long int sample = atol(argv[4])*atol(argv[7])*atol(argv[10])*atol(argv[10]);
+	unsigned long int sample = atol(argv[4])*atol(argv[7])*atol(argv[10])*atol(argv[11]);
 	
 	// building worker source file
 	worker_c = fopen("worker-blokice.c","w");
@@ -101,13 +101,14 @@ int main(int argc, char *argv[]){
 	fprintf(worker_c,"x_div=x_div/(double)node_count;\n");
 	fprintf(worker_c,"x_min=x_min+x_div*node_rank;\n");
 	fprintf(worker_c,"x_max=x_min+x_div;\n");
-	fprintf(worker_c,"x_div=x_max-x_min;\n");
+	fprintf(worker_c,"x_div=(x_max-x_min)/(double)x_num;\n");
+	fprintf(worker_c,"x=x_min;\n");
 	
 	fprintf(worker_c,"for (i=0; x<x_max; i++){\n");
 	fprintf(worker_c,"x=x_min+i*x_div;\n");
 	print_field('y',argv[5],argv[6]);
 	print_field('z',argv[8],argv[9]);
-	fprintf(worker_c,"y=y_min; z=z_min;\n");
+	fprintf(worker_c,"\ty=y_min; z=z_min;\n");
 	
 	fprintf(worker_c,"for (j=0; y<y_max; j++){\n");
 	fprintf(worker_c,"y=y_min+j*y_div;\n");
