@@ -38,11 +38,11 @@ if (!node_rank){\n\
 	printf(\"montice: start  = %d.%d\\n\",start_time.tv_sec,start_time.tv_usec);\n\
 	}\n\
 	srand(start_time.tv_sec*node_rank+start_time.tv_usec);\n\
-	for (i=0; i<sample_count; i++){\n";
+	for (i=0; i<sample_count; i){\n";
 	
 char template_d[]="\
  	temp = function(x,y,z)/(double)sample_count*x_span*y_span*z_span;\n\
- 	if (!isnan(temp)) sum_local+=temp;\n\
+ 	if (!isnan(temp)) {sum_local+=temp; i++;}\n\
 	}\n\
 MPI_Reduce(&sum_local,&sum_final,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);\n\
 if (!node_rank){\n\
