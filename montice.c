@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){\n\
 double x_min, x_max, x_span;\n\
 double y_min, y_max, y_span;\n\
 double z_min, z_max, z_span;\n\
-double sum_final, sum_local;\n\
+double temp, sum_final, sum_local;\n\
 double x=0.0, y=0.0, z=0.0;\n\
 unsigned long int sample_count, i;\n\
 int node_count, node_rank, node_namelen;\n\
@@ -41,7 +41,8 @@ if (!node_rank){\n\
 	for (i=0; i<sample_count; i++){\n";
 	
 char template_d[]="\
- 	sum_local += function(x,y,z)/(double)sample_count*x_span*y_span*z_span;\n\
+ 	temp = function(x,y,z)/(double)sample_count*x_span*y_span*z_span;\n\
+ 	if (!isnan(temp)) sum_local+=temp;\n\
 	}\n\
 MPI_Reduce(&sum_local,&sum_final,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);\n\
 if (!node_rank){\n\

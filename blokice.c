@@ -24,7 +24,7 @@ double x_min, x_max, x=0.0, x_div;\n\
 double y_min, y_max, y=0.0, y_div;\n\
 double z_min, z_max, z=0.0, z_div;\n\
 unsigned long int x_num, y_num, z_num;\n\
-double sum_local, sum_final;\n\
+double temp, sum_local, sum_final;\n\
 unsigned long int i, j, k;\n\
 int node_count, node_rank, node_namelen;\n\
 char node_name[MPI_MAX_PROCESSOR_NAME];\n\
@@ -117,8 +117,9 @@ int main(int argc, char *argv[]){
 	
 	fprintf(worker_c,"for (k=0; z<z_max; k++){\n");
 	fprintf(worker_c,"z=z_min+k*z_div;\n");
-	fprintf(worker_c,"if ((x<x_max) && (y<y_max) && (z<z_max)) \
-	sum_local+=function(x+0.5*x_div,y+0.5*y_div,z+0.5*z_div)*x_div*y_div*z_div;\n");
+	fprintf(worker_c,"if ((x<x_max) && (y<y_max) && (z<z_max)){\n");
+	fprintf(worker_c,"temp=function(x+0.5*x_div,y+0.5*y_div,z+0.5*z_div)*x_div*y_div*z_div;\n");
+	fprintf(worker_c,"if(!isnan(temp)) sum_local+=temp;\n}");
 	fprintf(worker_c,"}}}\n");
 			
 	fprintf(worker_c,"%s",template_d);
