@@ -1,0 +1,9 @@
+cluster1 slots=4
+cluster2 slots=4
+cluster3 slots=4
+cluster4 slots=4
+cluster5 slots=4
+cluster6 slots=4
+link1 slots=2
+link2 slots=2
+link3 slots=2
